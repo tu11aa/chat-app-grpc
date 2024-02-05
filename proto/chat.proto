@@ -1,9 +1,9 @@
 syntax = "proto3";
 import "google/protobuf/empty.proto";
 
-package randomPackage;
+package chatPackage;
 
-service Random {
+service ChatService {
   rpc ChatInitiate(InitiateRequest) returns (InitiateResponse) {};
   rpc SendMessage(MessageRequest) returns (google.protobuf.Empty) {};
   rpc UserStream(StreamRequest) returns (stream UserStreamResponse) {};

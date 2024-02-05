@@ -1,8 +1,8 @@
 import path from "path";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
-import { ProtoGrpcType } from "./proto/random";
-import { RandomHandlers } from "./proto/randomPackage/Random";
+import { ProtoGrpcType } from "./proto/chat";
+import { Chathandlers } from "./proto/chatPackage/Chat";
 import { StreamMessage } from "./proto/randomPackage/StreamMessage";
 import { ChatConnectRequest } from "./proto/randomPackage/ChatConnectRequest";
 import { UserStreamResponse } from "./proto/randomPackage/UserStreamResponse";
