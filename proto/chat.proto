@@ -52,3 +52,7 @@ message StreamMessage {
   string sender_avatar = 3;
   string message = 4;
 }
+
+message ChatConnectRequest {
+  int32 id = 1;
+}

@@ -1,0 +1,12 @@
+*2
+$6
+SELECT
+$1
+0
+*3
+$5
+rpush
+$5
+users
+$51
+{"id":2572301,"name":"tu","avatar":"Tu","status":1}

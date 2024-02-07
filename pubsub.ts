@@ -1,6 +1,6 @@
 import { nrp } from "./data";
-import { StreamMessage } from "./proto/randomPackage/StreamMessage";
-import { User } from "./proto/randomPackage/User";
+import { StreamMessage } from "./proto/chatPackage/StreamMessage";
+import { User } from "./proto/chatPackage/User";
 
 const REDIS_CHANNELS = {
   mainRoom: "MAIN_ROOM",

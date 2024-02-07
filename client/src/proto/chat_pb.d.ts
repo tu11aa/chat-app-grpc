@@ -163,6 +163,24 @@ export namespace StreamMessage {
   }
 }
 
+export class ChatConnectRequest extends jspb.Message {
+  getId(): number;
+  setId(value: number): ChatConnectRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ChatConnectRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ChatConnectRequest): ChatConnectRequest.AsObject;
+  static serializeBinaryToWriter(message: ChatConnectRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ChatConnectRequest;
+  static deserializeBinaryFromReader(message: ChatConnectRequest, reader: jspb.BinaryReader): ChatConnectRequest;
+}
+
+export namespace ChatConnectRequest {
+  export type AsObject = {
+    id: number,
+  }
+}
+
 export enum Status { 
   UNKOWN = 0,
   ONLINE = 1,

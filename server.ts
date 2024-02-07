@@ -2,11 +2,11 @@ import path from "path";
 import * as grpc from "@grpc/grpc-js";
 import * as protoLoader from "@grpc/proto-loader";
 import { ProtoGrpcType } from "./proto/chat";
-import { Chathandlers } from "./proto/chatPackage/Chat";
-import { StreamMessage } from "./proto/randomPackage/StreamMessage";
-import { ChatConnectRequest } from "./proto/randomPackage/ChatConnectRequest";
-import { UserStreamResponse } from "./proto/randomPackage/UserStreamResponse";
-import { User } from "./proto/randomPackage/User";
+import { ChatServiceHandlers } from "./proto/chatPackage/ChatService";
+import { StreamMessage } from "./proto/chatPackage/StreamMessage";
+import { ChatConnectRequest } from "./proto/chatPackage/ChatConnectRequest";
+import { UserStreamResponse } from "./proto/chatPackage/UserStreamResponse";
+import { User } from "./proto/chatPackage/User";
 import {
   addUser,
   listUsers,
@@ -21,16 +21,16 @@ import {
   listenMainRoomChatUpdate,
   listenUserUpdateEvent,
 } from "./pubsub";
-import { Status } from "./proto/randomPackage/Status";
+import { Status } from "./proto/chatPackage/Status";
 
 const PORT = 9090;
-const PROTO_FILE = "./proto/random.proto";
+const PROTO_FILE = "./proto/chat.proto";
 
 const packageDef = protoLoader.loadSync(path.resolve(__dirname, PROTO_FILE));
 const grpcObj = grpc.loadPackageDefinition(
   packageDef
 ) as unknown as ProtoGrpcType;
-const randomPackage = grpcObj.randomPackage;
+const chatPackage = grpcObj.chatPackage;
 
 function main() {
   const server = getServer();
@@ -59,7 +59,8 @@ const userIdToUserListStream = new Map<
 >();
 function getServer() {
   const server = new grpc.Server();
-  server.addService(randomPackage.Random.service, {
+  server.addService(chatPackage.ChatService.service, {
+
     ChatInitiate: (call, callback) => {
       const sessionName = (call.request.name || "").trim().toLowerCase();
       const avatar = call.request.avatarUrl || "";
@@ -86,6 +87,7 @@ function getServer() {
         }
       });
     },
+
     ChatStream: (call) => {
       const { id = 0 } = call.request;
       findUser(id, (err, user) => {
@@ -99,17 +101,18 @@ function getServer() {
             call.write(msg);
           }
         });
-
+        
         call.on("cancelled", () => {
           userIdToMsgStream.delete(id);
         });
       });
     },
+
     SendMessage: (call, callback) => {
       const { id = 0, message = "" } = call.request;
       if (!id) return callback(new Error("not valid id"));
       if (!message) return callback(new Error("no message"));
-
+    
       findUser(id, (err, user) => {
         if (err) return callback(null, err);
         const msg: StreamMessage = {
@@ -125,6 +128,7 @@ function getServer() {
         });
       });
     },
+
     UserStream: (call) => {
       const { id = 0 } = call.request;
       if (!id) return call.end();
@@ -153,8 +157,9 @@ function getServer() {
           
         });
       });
-    },
-  } as RandomHandlers);
+    }
+
+  } as ChatServiceHandlers);
 
   return server;
 }

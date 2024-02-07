@@ -1,7 +1,7 @@
 import redis from "redis";
 import NRP from "node-redis-pubsub";
-import { StreamMessage } from "./proto/randomPackage/StreamMessage";
-import { User } from "./proto/randomPackage/User";
+import { StreamMessage } from "./proto/chatPackage/StreamMessage";
+import { User } from "./proto/chatPackage/User";
 
 const REDIST_KEYS = {
   broadcastRoom: "room:0:messages",
