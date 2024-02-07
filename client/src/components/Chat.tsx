@@ -12,7 +12,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import SendIcon from "@material-ui/icons/Send";
 import UserList from "./UserList";
 import ChatBubble from "./ChatBubble";
-import { Status, StreamMessage, User } from "../proto/random_pb";
+import { Status, StreamMessage, User } from "../proto/chat_pb";
 import { Session } from "../App";
 
 const style: { [key: string]: React.CSSProperties } = {

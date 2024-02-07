@@ -1,7 +1,7 @@
 import React from "react";
 import Grid from "@material-ui/core/Grid";
 import "./style.css";
-import { StreamMessage } from "../proto/random_pb";
+import { StreamMessage } from "../proto/chat_pb";
 
 interface Props {
   message: StreamMessage.AsObject;
