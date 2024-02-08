@@ -8,7 +8,6 @@ import ImageGalleryDialog from "./ImageGallery";
 
 const style: { [key: string]: React.CSSProperties } = {
   paper: {
-    // height: "30vh",
     width: "30%",
     backgroundColor: "blueviolet",
     color: "white",
@@ -35,19 +34,20 @@ const style: { [key: string]: React.CSSProperties } = {
 };
 
 interface Props {
-  onUsernameEnter: (name: string, avatar: string) => void;
+  onUserSubmit: (name: string, password: string, avatar: string) => void;
 }
 
 const Greeting: React.FC<Props> = (props) => {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [img, setImage] = useState("");
   const [open, setOpen] = useState(false);
-  const { onUsernameEnter } = props;
+  const { onUserSubmit } = props;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name && !img) return;
-    onUsernameEnter(name, img);
+    if (!username && !password && !img) return;
+    onUserSubmit(username, password, img);
   };
 
   const handleImageSelect = (imgURL: string) => {
@@ -61,7 +61,7 @@ const Greeting: React.FC<Props> = (props) => {
       <Paper style={style.paper}>
         <form onSubmit={handleSubmit} style={style.form}>
           <Typopgraphy variant="h5">
-            Please enter your name before joining the chat
+            If you do not have an account, just sign up here
           </Typopgraphy>
           <IconButton
             style={style.avatar}
@@ -74,8 +74,8 @@ const Greeting: React.FC<Props> = (props) => {
           <TextField
             style={style.input}
             placeholder="Enter Username..."
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             InputLabelProps={{
               style: {
                 color: "white",
@@ -87,6 +87,24 @@ const Greeting: React.FC<Props> = (props) => {
               },
             }}
           />
+          <TextField
+            style={style.input}
+            type="password"
+            placeholder="Enter Password..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputLabelProps={{
+              style: {
+                color: "white",
+              },
+            }}
+            InputProps={{
+              style: {
+                color: "white",
+              },
+            }}
+          />
+          <button type="submit" style={{marginTop:'20px'}}>Submit</button>
         </form>
       </Paper>
       <ImageGalleryDialog isOpen={open} onImageSelect={handleImageSelect} />

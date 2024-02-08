@@ -2,11 +2,15 @@
 
 
 export interface MessageRequest {
-  'id'?: (number);
+  'username'?: (string);
+  'roomId'?: (number);
   'message'?: (string);
+  'whisper'?: (string);
 }
 
 export interface MessageRequest__Output {
-  'id'?: (number);
+  'username'?: (string);
+  'roomId'?: (number);
   'message'?: (string);
+  'whisper'?: (string);
 }

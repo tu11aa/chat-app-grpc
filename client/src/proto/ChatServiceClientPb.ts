@@ -40,47 +40,90 @@ export class ChatServiceClient {
     this.options_ = options;
   }
 
-  methodDescriptorChatInitiate = new grpcWeb.MethodDescriptor(
-    '/chatPackage.ChatService/ChatInitiate',
+  methodDescriptorSignUp = new grpcWeb.MethodDescriptor(
+    '/chatPackage.ChatService/SignUp',
     grpcWeb.MethodType.UNARY,
-    proto_chat_pb.InitiateRequest,
-    proto_chat_pb.InitiateResponse,
-    (request: proto_chat_pb.InitiateRequest) => {
+    proto_chat_pb.SignUpRequest,
+    proto_chat_pb.User,
+    (request: proto_chat_pb.SignUpRequest) => {
       return request.serializeBinary();
     },
-    proto_chat_pb.InitiateResponse.deserializeBinary
+    proto_chat_pb.User.deserializeBinary
   );
 
-  chatInitiate(
-    request: proto_chat_pb.InitiateRequest,
-    metadata: grpcWeb.Metadata | null): Promise<proto_chat_pb.InitiateResponse>;
+  signUp(
+    request: proto_chat_pb.SignUpRequest,
+    metadata: grpcWeb.Metadata | null): Promise<proto_chat_pb.User>;
 
-  chatInitiate(
-    request: proto_chat_pb.InitiateRequest,
+  signUp(
+    request: proto_chat_pb.SignUpRequest,
     metadata: grpcWeb.Metadata | null,
     callback: (err: grpcWeb.RpcError,
-               response: proto_chat_pb.InitiateResponse) => void): grpcWeb.ClientReadableStream<proto_chat_pb.InitiateResponse>;
+               response: proto_chat_pb.User) => void): grpcWeb.ClientReadableStream<proto_chat_pb.User>;
 
-  chatInitiate(
-    request: proto_chat_pb.InitiateRequest,
+  signUp(
+    request: proto_chat_pb.SignUpRequest,
     metadata: grpcWeb.Metadata | null,
     callback?: (err: grpcWeb.RpcError,
-               response: proto_chat_pb.InitiateResponse) => void) {
+               response: proto_chat_pb.User) => void) {
     if (callback !== undefined) {
       return this.client_.rpcCall(
         this.hostname_ +
-          '/chatPackage.ChatService/ChatInitiate',
+          '/chatPackage.ChatService/SignUp',
         request,
         metadata || {},
-        this.methodDescriptorChatInitiate,
+        this.methodDescriptorSignUp,
         callback);
     }
     return this.client_.unaryCall(
     this.hostname_ +
-      '/chatPackage.ChatService/ChatInitiate',
+      '/chatPackage.ChatService/SignUp',
     request,
     metadata || {},
-    this.methodDescriptorChatInitiate);
+    this.methodDescriptorSignUp);
+  }
+
+  methodDescriptorSignIn = new grpcWeb.MethodDescriptor(
+    '/chatPackage.ChatService/SignIn',
+    grpcWeb.MethodType.UNARY,
+    proto_chat_pb.SignInRequest,
+    proto_chat_pb.User,
+    (request: proto_chat_pb.SignInRequest) => {
+      return request.serializeBinary();
+    },
+    proto_chat_pb.User.deserializeBinary
+  );
+
+  signIn(
+    request: proto_chat_pb.SignInRequest,
+    metadata: grpcWeb.Metadata | null): Promise<proto_chat_pb.User>;
+
+  signIn(
+    request: proto_chat_pb.SignInRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.RpcError,
+               response: proto_chat_pb.User) => void): grpcWeb.ClientReadableStream<proto_chat_pb.User>;
+
+  signIn(
+    request: proto_chat_pb.SignInRequest,
+    metadata: grpcWeb.Metadata | null,
+    callback?: (err: grpcWeb.RpcError,
+               response: proto_chat_pb.User) => void) {
+    if (callback !== undefined) {
+      return this.client_.rpcCall(
+        this.hostname_ +
+          '/chatPackage.ChatService/SignIn',
+        request,
+        metadata || {},
+        this.methodDescriptorSignIn,
+        callback);
+    }
+    return this.client_.unaryCall(
+    this.hostname_ +
+      '/chatPackage.ChatService/SignIn',
+    request,
+    metadata || {},
+    this.methodDescriptorSignIn);
   }
 
   methodDescriptorSendMessage = new grpcWeb.MethodDescriptor(

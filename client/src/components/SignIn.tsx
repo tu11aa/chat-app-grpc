@@ -2,13 +2,9 @@ import React, { useState } from "react";
 import Paper from "@material-ui/core/Paper";
 import Typopgraphy from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
-import Avatar from "@material-ui/core/Avatar";
-import { IconButton, Tooltip } from "@material-ui/core";
-import ImageGalleryDialog from "./ImageGallery";
 
 const style: { [key: string]: React.CSSProperties } = {
   paper: {
-    // height: "30vh",
     width: "30%",
     backgroundColor: "blueviolet",
     color: "white",
@@ -26,34 +22,23 @@ const style: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-  },
-  avatar: {
-    height: 80,
-    width: 80,
-    margin: "2rem 0rem",
-  },
+  }
 };
 
 interface Props {
-  onUsernameEnter: (name: string, avatar: string) => void;
+  onUserSubmit: (name: string, avatar: string) => void;
 }
 
-const Greeting: React.FC<Props> = (props) => {
-  const [name, setName] = useState("");
-  const [img, setImage] = useState("");
+const SignIn: React.FC<Props> = (props) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [open, setOpen] = useState(false);
-  const { onUsernameEnter } = props;
+  const { onUserSubmit } = props;
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!name && !img) return;
-    onUsernameEnter(name, img);
-  };
-
-  const handleImageSelect = (imgURL: string) => {
-    if (!imgURL) return;
-    setImage(imgURL);
-    setOpen(false);
+    if (!username && !password) return;
+    onUserSubmit(username, password);
   };
 
   return (
@@ -61,21 +46,13 @@ const Greeting: React.FC<Props> = (props) => {
       <Paper style={style.paper}>
         <form onSubmit={handleSubmit} style={style.form}>
           <Typopgraphy variant="h5">
-            Please enter your name before joining the chat
+            Please sign in to join chat
           </Typopgraphy>
-          <IconButton
-            style={style.avatar}
-            onClick={() => setOpen((prev) => !prev)}
-          >
-            <Tooltip title="Add Image">
-              <Avatar src={img} style={style.avatar} sizes="large" />
-            </Tooltip>
-          </IconButton>
           <TextField
             style={style.input}
             placeholder="Enter Username..."
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             InputLabelProps={{
               style: {
                 color: "white",
@@ -87,11 +64,28 @@ const Greeting: React.FC<Props> = (props) => {
               },
             }}
           />
+          <TextField
+            style={style.input}
+            type="password"
+            placeholder="Enter Password..."
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            InputLabelProps={{
+              style: {
+                color: "white",
+              },
+            }}
+            InputProps={{
+              style: {
+                color: "white",
+              },
+            }}
+          />
+          <button type="submit" style={{marginTop:'20px'}}>Submit</button>
         </form>
       </Paper>
-      <ImageGalleryDialog isOpen={open} onImageSelect={handleImageSelect} />
     </>
   );
 };
 
-export default Greeting;
+export default SignIn;

@@ -14,6 +14,7 @@ import UserList from "./UserList";
 import ChatBubble from "./ChatBubble";
 import { Status, StreamMessage, User } from "../proto/chat_pb";
 import { Session } from "../App";
+import { Home } from "@material-ui/icons";
 
 const style: { [key: string]: React.CSSProperties } = {
   container: {
@@ -32,6 +33,9 @@ const style: { [key: string]: React.CSSProperties } = {
   avatar: {
     margin: "20px",
   },
+  home: {
+    margin: "20px",
+  }
 };
 
 interface Props {
@@ -39,18 +43,28 @@ interface Props {
   userList: Array<User.AsObject>;
   messages: Array<StreamMessage.AsObject>;
   onMessageSubmit: (msg: string, onSuccess: () => void) => void;
+  onPrivateMessageSubmit: (msg: string, to: string, onSuccess: () => void) => void;
 }
 
 const Chat: React.FC<Props> = (props) => {
   const [msg, setMsg] = useState("");
-  const { userList, messages, onMessageSubmit, user } = props;
+  const { userList, messages, onMessageSubmit, onPrivateMessageSubmit, user } = props;
 
   const handleSendMessage = (e: React.FormEvent<HTMLFormElement>) => {
     console.log("called");
     e.preventDefault();
     if (!msg) return;
-    console.log("here ", msg);
-    onMessageSubmit(msg, () => setMsg(""));
+    
+    if (msg.startsWith(':')){
+      console.log('private chat ', msg.substring(1, msg.indexOf(' ')));
+      
+      onPrivateMessageSubmit(
+        msg,
+        msg.substring(1, msg.indexOf(' ')),
+        () => setMsg("")
+      )
+    }
+    else onMessageSubmit(msg, () => setMsg(""));
   };
 
   return (
@@ -58,7 +72,10 @@ const Chat: React.FC<Props> = (props) => {
       <Grid container style={style.container} spacing={3}>
         <Grid item xs={3}>
           <Paper style={style.paper}>
+            <Home style={style.home}/>
             <UserList
+              key={user.id}
+              user={user}
               users={userList.map((x) => ({
                 ...x,
                 isOnline: x.status === Status.ONLINE,
@@ -89,10 +106,10 @@ const Chat: React.FC<Props> = (props) => {
                 <Grid
                   container
                   direction="column"
-                  justify="center"
+                  justifyContent="center"
                   alignItems="center"
                 >
-                  <Typography variant="button">{user.name}</Typography>
+                  <Typography variant="button">{user.username}</Typography>
                   <Chip
                     color="primary"
                     size="small"

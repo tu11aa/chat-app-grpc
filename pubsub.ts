@@ -7,10 +7,10 @@ const REDIS_CHANNELS = {
   userChange: "USER_CHAHNGE",
 };
 
-const emitMainRoomChatUpdate = (msg: StreamMessage) =>
+const emitRoomChatUpdate = (username: string, msg: StreamMessage) =>
   nrp.emit(REDIS_CHANNELS.mainRoom, JSON.stringify(msg));
 
-const listenMainRoomChatUpdate = (
+const listenRoomChatUpdate = (
   fn: (data: string, channel: string) => void
 ) => nrp.on(REDIS_CHANNELS.mainRoom, fn);
 
@@ -21,8 +21,8 @@ const listenUserUpdateEvent = (fn: (data: string, channel: string) => void) =>
   nrp.on(REDIS_CHANNELS.userChange, fn);
 
 export {
-  emitMainRoomChatUpdate,
-  listenMainRoomChatUpdate,
+  emitRoomChatUpdate,
+  listenRoomChatUpdate,
   emitUserUpdateEvent,
   listenUserUpdateEvent,
 };

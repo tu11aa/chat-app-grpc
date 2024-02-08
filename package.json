@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "proto:gen": "./proto-gen.bat",
+    "proto:gen": "./proto-gen.bat && ./proto-gen-web.bat",
     "start": "ts-node server",
     "client": "cd client && yarn start"
   },

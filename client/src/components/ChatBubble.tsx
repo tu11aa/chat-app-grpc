@@ -22,7 +22,7 @@ const ChatBubble: React.FC<Props> = ({ message, isCurrentUser }) => {
     >
       <blockquote
         className="speech-bubble"
-        style={{ backgroundColor: isCurrentUser ? "#bad4ff" : undefined }}
+        style={{ backgroundColor: isCurrentUser ? "#3F51B5" : undefined }}
       >
         <p>{text}</p>
         {!isCurrentUser && <cite>{senderName}</cite>}

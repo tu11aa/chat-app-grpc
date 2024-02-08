@@ -7,21 +7,27 @@ import { StreamMessage } from "./proto/chatPackage/StreamMessage";
 import { ChatConnectRequest } from "./proto/chatPackage/ChatConnectRequest";
 import { UserStreamResponse } from "./proto/chatPackage/UserStreamResponse";
 import { User } from "./proto/chatPackage/User";
-import {
+import client, {
   addUser,
-  listUsers,
+  getUserList,
   listMessagesFromMainRoom,
   addChatToMainRoom,
-  findUser,
-  updateUser,
+  // findUser,
+  // updateUser,
+  getUserByUsername,
+  createIdOfKey,
+  signIn,
+  signUp,
+  updateUser
 } from "./data";
 import {
-  emitMainRoomChatUpdate,
+  emitRoomChatUpdate,
   emitUserUpdateEvent,
-  listenMainRoomChatUpdate,
+  listenRoomChatUpdate,
   listenUserUpdateEvent,
 } from "./pubsub";
 import { Status } from "./proto/chatPackage/Status";
+import { StreamRequest } from "./proto/chatPackage/StreamRequest";
 
 const PORT = 9090;
 const PROTO_FILE = "./proto/chat.proto";
@@ -46,118 +52,114 @@ function main() {
       server.start();
     }
   );
+  
   runStreams();
 }
 
-const userIdToMsgStream = new Map<
-  number,
-  grpc.ServerWritableStream<ChatConnectRequest, StreamMessage>
+const usernameToMsgStream = new Map<
+  string,
+  grpc.ServerWritableStream<StreamRequest, StreamMessage>
 >();
-const userIdToUserListStream = new Map<
-  number,
-  grpc.ServerWritableStream<ChatConnectRequest, UserStreamResponse>
+const usernameToUserListStream = new Map<
+  string,
+  grpc.ServerWritableStream<StreamRequest, UserStreamResponse>
 >();
 function getServer() {
   const server = new grpc.Server();
   server.addService(chatPackage.ChatService.service, {
 
-    ChatInitiate: (call, callback) => {
-      const sessionName = (call.request.name || "").trim().toLowerCase();
-      const avatar = call.request.avatarUrl || "";
-      if (!sessionName || !avatar)
-        callback(new Error("Name/Avatar is required"));
-      listUsers((err, users) => {
+    SignIn: (call, callback) => {
+      const {username, password} = call.request;
+      if (!username || !password) return callback(new Error('Name/password required'));
+      signIn(call.request, (err, user) => {
         if (err) return callback(err);
-        let idx = users.findIndex((u) => u?.name?.toLowerCase() === sessionName);
-        if (idx !== -1 && users[idx].status === Status.ONLINE)
-          return callback(new Error("User with name already exist"));
-        if (idx !== -1) {
-          const user = users[idx];
-          updateUser(user, console.error);
-          return callback(null, { id: user.id });
-        } else {
-          const user: User = {
-            id: idx === -1 ? Math.floor(Math.random() * 10000000) : idx,
-            name: sessionName,
-            avatar,
-            status: Status.ONLINE,
-          };
-          addUser(user, console.error);
-          return callback(null, { id: user.id });
-        }
-      });
+        if (!user) return callback(new Error('Wrong username or password'))
+        callback(null, user);
+      })
+    },
+
+    SignUp: (call, callback) => {
+      getUserByUsername(call.request.credential?.username as string, (err, rep) => {
+        if (err) return callback(err);
+        if (rep) return callback(new Error('Username existed'));
+        signUp(call.request, (err, user) => {
+          if (err) return callback(err);
+          callback(null, user);
+        })
+      })
+    },
+
+    UserStream: (call) => {
+      const { username} = call.request;
+      console.log('Request user stream from ', username)
+      if (!username) return call.end();
+
+      getUserByUsername(username, (err, user) => {
+        if (err || !user) return call.end();
+        user.status = Status.ONLINE;
+        updateUser(user, (err) => {
+          if(err) throw err
+          getUserList((err, users) => {
+            if (err) throw err;
+            usernameToUserListStream.set(username as string, call);
+            emitUserUpdateEvent(user);
+          });
+        });
+
+        call.on("cancelled", () => {
+          usernameToUserListStream.delete(username)
+          user.status = Status.OFFLINE;
+          updateUser(user, (err) => {
+            if(err) throw err
+            emitUserUpdateEvent(user)
+          });
+        });
+      })
     },
 
     ChatStream: (call) => {
-      const { id = 0 } = call.request;
-      findUser(id, (err, user) => {
+      getUserByUsername(call.request.username as string, (err, rep) => {
         if (err) return call.end();
-        const {id: userId = 0} = user
-        user.status = Status.ONLINE;
+        const user = rep as User;
+        console.log('Request user chat from ', user.username)
+        const username = user.username as string;
         updateUser(user, console.error);
         listMessagesFromMainRoom((msgs) => {
-          userIdToMsgStream.set(userId, call);
+          usernameToMsgStream.set(username as string, call);
           for (const msg of msgs) {
             call.write(msg);
           }
         });
         
         call.on("cancelled", () => {
-          userIdToMsgStream.delete(id);
+          usernameToMsgStream.delete(username as string);
         });
       });
     },
 
     SendMessage: (call, callback) => {
-      const { id = 0, message = "" } = call.request;
-      if (!id) return callback(new Error("not valid id"));
+      const { username = "", message = "", whisper = "all"} = call.request;
+      if (!username) return callback(new Error("not valid id"));
       if (!message) return callback(new Error("no message"));
     
-      findUser(id, (err, user) => {
+      getUserByUsername(username, (err, rep) => {
         if (err) return callback(null, err);
+        const user = rep as User;
         const msg: StreamMessage = {
-          id,
-          senderName: user.name,
+          id: user.id,
+          senderName: user.username,
           senderAvatar: user.avatar,
           message,
+          to: whisper
         };
+        console.log('Send message', msg)
         addChatToMainRoom(msg, (err) => {
           if (err) callback(null, err);
-          emitMainRoomChatUpdate(msg);
+          emitRoomChatUpdate(user.username as string, msg);
           callback(null);
         });
       });
     },
-
-    UserStream: (call) => {
-      const { id = 0 } = call.request;
-      if (!id) return call.end();
-      findUser(id, (err, user) => {
-        const {id: userId = 0} = user
-        if (err) return call.end();
-        user.status = Status.ONLINE;
-        updateUser(user, () => {
-          if(err) throw err
-          listUsers((err, users) => {
-            if (err) throw err;
-            userIdToUserListStream.set(userId, call);
-            for (const [, stream] of userIdToUserListStream) {
-              stream.write({ users });
-            }
-          });
-        });
-        
-        call.on("cancelled", () => {
-          userIdToUserListStream.delete(id)
-          user.status = Status.OFFLINE;
-          updateUser(user, (err) => {
-            if(err) throw err
-            emitUserUpdateEvent(user)
-          });
-          
-        });
-      });
-    }
 
   } as ChatServiceHandlers);
 
@@ -165,20 +167,21 @@ function getServer() {
 }
 
 function runStreams() {
-  listenMainRoomChatUpdate((data, channel) => {
-    const msg = JSON.parse(data) as StreamMessage;
-    for (const [, stream] of userIdToMsgStream) {
-      stream.write(msg);
-    }
-  });
   listenUserUpdateEvent(() =>
-    listUsers((err, users) => {
+    getUserList((err, users) => {
       if (err) throw err;
-      for (const [, stream] of userIdToUserListStream) {
-        stream.write({ users });
+      for (const [, stream] of usernameToUserListStream) {        
+        stream.write({users} as UserStreamResponse);
       }
     })
   );
+  listenRoomChatUpdate((data, channel) => {
+    const msg = JSON.parse(data) as StreamMessage;
+    for (const [username , stream] of usernameToMsgStream) {      
+      if (msg.to === 'all' || username === msg.to || username=== msg.senderName) stream.write(msg);
+      // stream.write(msg);
+    }
+  });
 }
 
 main();

@@ -1,14 +1,16 @@
 import React from "react";
 import Card from "@material-ui/core/Card";
 import { Avatar, Typography, Chip, Grid } from "@material-ui/core";
+import { Session } from "../App";
 
 interface IUser {
   id: number;
-  name: string;
+  username: string;
   isOnline: boolean;
   avatar: string;
 }
 interface Props {
+  user: Session;
   users: Array<IUser>;
 }
 
@@ -27,20 +29,21 @@ const style: { [key: string]: React.CSSProperties } = {
 };
 
 const UserList: React.FC<Props> = (props) => {
-  const { users } = props;
+  const { user, users } = props;
 
   return (
     <>
-      {users.map((u) => (
+      {users.map((u) => 
+        u.username !== user.username ? (
         <Card style={style.card} key={u.id}>
           <Avatar style={style.avatar} src={u.avatar} />
           <Grid
             container
             direction="column"
-            justify="flex-start"
+            justifyContent="flex-start"
             alignItems="flex-start"
           >
-            <Typography variant="body1">{u.name}</Typography>
+            <Typography variant="body1">{u.username}</Typography>
             <Chip
               color={u.isOnline ? "primary" : "default"}
               size="small"
@@ -49,7 +52,8 @@ const UserList: React.FC<Props> = (props) => {
             />
           </Grid>
         </Card>
-      ))}
+        ):<></>
+      )}
     </>
   );
 };

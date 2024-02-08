@@ -9,11 +9,11 @@ type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> 
 
 export interface ProtoGrpcType {
   chatPackage: {
-    ChatConnectRequest: MessageTypeDefinition
     ChatService: SubtypeConstructor<typeof grpc.Client, _chatPackage_ChatServiceClient> & { service: _chatPackage_ChatServiceDefinition }
-    InitiateRequest: MessageTypeDefinition
-    InitiateResponse: MessageTypeDefinition
     MessageRequest: MessageTypeDefinition
+    Room: MessageTypeDefinition
+    SignInRequest: MessageTypeDefinition
+    SignUpRequest: MessageTypeDefinition
     Status: EnumTypeDefinition
     StreamMessage: MessageTypeDefinition
     StreamRequest: MessageTypeDefinition

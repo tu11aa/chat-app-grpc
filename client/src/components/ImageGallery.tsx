@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Dialog from "@material-ui/core/Dialog";
 import DialogContent from "@material-ui/core/DialogContent";
-import GridList from "@material-ui/core/GridList";
-import GridListTile from "@material-ui/core/GridListTile";
+import { ImageList, ImageListItem } from '@material-ui/core'
 import DialogTitle from "@material-ui/core/DialogTitle";
 
 type Images = { id: string; download_url: string };
@@ -34,18 +33,18 @@ const ImageGalleryDialog: React.FC<Props> = (props) => {
         {"Select your image avatar"}
       </DialogTitle>
       <DialogContent>
-        <GridList cellHeight={160} cols={3}>
+        <ImageList rowHeight={160} cols={3}>
           {images.map((img) => (
-            <GridListTile
+            <ImageListItem
               style={{ cursor: "pointer" }}
               key={img.id}
               cols={1}
               onClick={() => onImageSelect(img.download_url)}
             >
               <img src={img.download_url} alt="Display" />
-            </GridListTile>
+            </ImageListItem>
           ))}
-        </GridList>
+        </ImageList>
       </DialogContent>
     </Dialog>
   );

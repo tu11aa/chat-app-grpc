@@ -2,9 +2,9 @@
 
 
 export interface StreamRequest {
-  'id'?: (number);
+  'username'?: (string);
 }
 
 export interface StreamRequest__Output {
-  'id'?: (number);
+  'username'?: (string);
 }

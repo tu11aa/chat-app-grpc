@@ -3,52 +3,64 @@ import * as jspb from 'google-protobuf'
 import * as google_protobuf_empty_pb from 'google-protobuf/google/protobuf/empty_pb';
 
 
-export class InitiateRequest extends jspb.Message {
-  getName(): string;
-  setName(value: string): InitiateRequest;
+export class SignUpRequest extends jspb.Message {
+  getCredential(): SignInRequest | undefined;
+  setCredential(value?: SignInRequest): SignUpRequest;
+  hasCredential(): boolean;
+  clearCredential(): SignUpRequest;
 
   getAvatarUrl(): string;
-  setAvatarUrl(value: string): InitiateRequest;
+  setAvatarUrl(value: string): SignUpRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InitiateRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: InitiateRequest): InitiateRequest.AsObject;
-  static serializeBinaryToWriter(message: InitiateRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InitiateRequest;
-  static deserializeBinaryFromReader(message: InitiateRequest, reader: jspb.BinaryReader): InitiateRequest;
+  toObject(includeInstance?: boolean): SignUpRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: SignUpRequest): SignUpRequest.AsObject;
+  static serializeBinaryToWriter(message: SignUpRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SignUpRequest;
+  static deserializeBinaryFromReader(message: SignUpRequest, reader: jspb.BinaryReader): SignUpRequest;
 }
 
-export namespace InitiateRequest {
+export namespace SignUpRequest {
   export type AsObject = {
-    name: string,
+    credential?: SignInRequest.AsObject,
     avatarUrl: string,
   }
 }
 
-export class InitiateResponse extends jspb.Message {
-  getId(): number;
-  setId(value: number): InitiateResponse;
+export class SignInRequest extends jspb.Message {
+  getUsername(): string;
+  setUsername(value: string): SignInRequest;
+
+  getPassword(): string;
+  setPassword(value: string): SignInRequest;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InitiateResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: InitiateResponse): InitiateResponse.AsObject;
-  static serializeBinaryToWriter(message: InitiateResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InitiateResponse;
-  static deserializeBinaryFromReader(message: InitiateResponse, reader: jspb.BinaryReader): InitiateResponse;
+  toObject(includeInstance?: boolean): SignInRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: SignInRequest): SignInRequest.AsObject;
+  static serializeBinaryToWriter(message: SignInRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SignInRequest;
+  static deserializeBinaryFromReader(message: SignInRequest, reader: jspb.BinaryReader): SignInRequest;
 }
 
-export namespace InitiateResponse {
+export namespace SignInRequest {
   export type AsObject = {
-    id: number,
+    username: string,
+    password: string,
   }
 }
 
 export class MessageRequest extends jspb.Message {
-  getId(): number;
-  setId(value: number): MessageRequest;
+  getUsername(): string;
+  setUsername(value: string): MessageRequest;
+
+  getRoomId(): number;
+  setRoomId(value: number): MessageRequest;
 
   getMessage(): string;
   setMessage(value: string): MessageRequest;
+
+  getWhisper(): string;
+  setWhisper(value: string): MessageRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): MessageRequest.AsObject;
@@ -60,8 +72,10 @@ export class MessageRequest extends jspb.Message {
 
 export namespace MessageRequest {
   export type AsObject = {
-    id: number,
+    username: string,
+    roomId: number,
     message: string,
+    whisper: string,
   }
 }
 
@@ -69,14 +83,19 @@ export class User extends jspb.Message {
   getId(): number;
   setId(value: number): User;
 
-  getName(): string;
-  setName(value: string): User;
+  getUsername(): string;
+  setUsername(value: string): User;
 
   getStatus(): Status;
   setStatus(value: Status): User;
 
   getAvatar(): string;
   setAvatar(value: string): User;
+
+  getRoomsIdList(): Array<string>;
+  setRoomsIdList(value: Array<string>): User;
+  clearRoomsIdList(): User;
+  addRoomsId(value: string, index?: number): User;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): User.AsObject;
@@ -89,9 +108,44 @@ export class User extends jspb.Message {
 export namespace User {
   export type AsObject = {
     id: number,
-    name: string,
+    username: string,
     status: Status,
     avatar: string,
+    roomsIdList: Array<string>,
+  }
+}
+
+export class Room extends jspb.Message {
+  getId(): number;
+  setId(value: number): Room;
+
+  getName(): string;
+  setName(value: string): Room;
+
+  getUsersIdList(): Array<string>;
+  setUsersIdList(value: Array<string>): Room;
+  clearUsersIdList(): Room;
+  addUsersId(value: string, index?: number): Room;
+
+  getMessagesList(): Array<StreamMessage>;
+  setMessagesList(value: Array<StreamMessage>): Room;
+  clearMessagesList(): Room;
+  addMessages(value?: StreamMessage, index?: number): StreamMessage;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Room.AsObject;
+  static toObject(includeInstance: boolean, msg: Room): Room.AsObject;
+  static serializeBinaryToWriter(message: Room, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Room;
+  static deserializeBinaryFromReader(message: Room, reader: jspb.BinaryReader): Room;
+}
+
+export namespace Room {
+  export type AsObject = {
+    id: number,
+    name: string,
+    usersIdList: Array<string>,
+    messagesList: Array<StreamMessage.AsObject>,
   }
 }
 
@@ -116,8 +170,8 @@ export namespace UserStreamResponse {
 }
 
 export class StreamRequest extends jspb.Message {
-  getId(): number;
-  setId(value: number): StreamRequest;
+  getUsername(): string;
+  setUsername(value: string): StreamRequest;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StreamRequest.AsObject;
@@ -129,13 +183,16 @@ export class StreamRequest extends jspb.Message {
 
 export namespace StreamRequest {
   export type AsObject = {
-    id: number,
+    username: string,
   }
 }
 
 export class StreamMessage extends jspb.Message {
   getId(): number;
   setId(value: number): StreamMessage;
+
+  getRoomId(): number;
+  setRoomId(value: number): StreamMessage;
 
   getSenderName(): string;
   setSenderName(value: string): StreamMessage;
@@ -145,6 +202,9 @@ export class StreamMessage extends jspb.Message {
 
   getMessage(): string;
   setMessage(value: string): StreamMessage;
+
+  getTo(): string;
+  setTo(value: string): StreamMessage;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StreamMessage.AsObject;
@@ -157,27 +217,11 @@ export class StreamMessage extends jspb.Message {
 export namespace StreamMessage {
   export type AsObject = {
     id: number,
+    roomId: number,
     senderName: string,
     senderAvatar: string,
     message: string,
-  }
-}
-
-export class ChatConnectRequest extends jspb.Message {
-  getId(): number;
-  setId(value: number): ChatConnectRequest;
-
-  serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): ChatConnectRequest.AsObject;
-  static toObject(includeInstance: boolean, msg: ChatConnectRequest): ChatConnectRequest.AsObject;
-  static serializeBinaryToWriter(message: ChatConnectRequest, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): ChatConnectRequest;
-  static deserializeBinaryFromReader(message: ChatConnectRequest, reader: jspb.BinaryReader): ChatConnectRequest;
-}
-
-export namespace ChatConnectRequest {
-  export type AsObject = {
-    id: number,
+    to: string,
   }
 }
 
